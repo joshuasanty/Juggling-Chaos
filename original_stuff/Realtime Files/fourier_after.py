@@ -7,10 +7,8 @@ import time
 start_time = time.time()
 
 print("Initializing webcam...")
-# Initialize the webcam
 cap = cv2.VideoCapture(0)
 
-# Check if the camera opened successfully
 if not cap.isOpened():
     print("Error: Could not open webcam.")
     exit()
@@ -27,7 +25,6 @@ width = cap.get(cv2.CAP_PROP_FRAME_WIDTH)
 height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT)
 print(f"Resolution set to {int(width)}x{int(height)}")
 
-# Define the white color range (for white objects like tennis balls)
 whiteLower = (0, 0, 200)
 whiteUpper = (180, 50, 255)
 
@@ -38,7 +35,6 @@ max_trail_length = 15  # 0.5 seconds at 30 fps
 distance_threshold = 25  # Maximum distance for a point to belong to the same trail
 time_step = 0.033  # Approx. 30 fps, constant time step in seconds
 
-# Create a blank canvas (change dimensions to your desired resolution)
 canvas_height, canvas_width = 480, 640
 canvas = np.zeros((canvas_height, canvas_width, 3), dtype=np.uint8)
 
