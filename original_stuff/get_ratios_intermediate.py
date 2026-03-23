@@ -4,24 +4,20 @@ import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 import os
 
-# Function to interpolate points for smoother trails
 def interpolate_points(p1, p2, steps=5):
     x_vals = np.linspace(p1[0], p2[0], steps).astype(int)
     y_vals = np.linspace(p1[1], p2[1], steps).astype(int)
     return [(x, y) for x, y in zip(x_vals, y_vals)]
 
-# Input video file path
-video_path = "videos/josh_normal.mp4"  # Replace with your video file path
+video_path = "videos/josh_normal.mp4"  
 output_dir = "plots"
 os.makedirs(output_dir, exist_ok=True)
 
-# Initialize video capture
 cap = cv2.VideoCapture(video_path)
 if not cap.isOpened():
     print("Error: Could not open video file.")
     exit()
 
-# Get video properties
 fps = cap.get(cv2.CAP_PROP_FPS)
 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -30,15 +26,13 @@ frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 print(f"Video loaded: {video_path}")
 print(f"Resolution: {frame_width}x{frame_height}, FPS: {fps}, Total Frames: {total_frames}")
 
-# Define color range for detecting white balls
 whiteLower = (0, 0, 200)
 whiteUpper = (180, 50, 255)
 
-# Initialize variables
 trail = []
-y_positions = []  # Store y-values of the ball's position
+y_positions = []  
 time_steps = []
-velocity = []  # Store velocity data
+velocity = [] 
 distance_threshold = 25  # Maximum distance for a point to belong to the same trail
 SCALE_FACTOR = 2866
 frame_idx = 0
@@ -52,14 +46,13 @@ while True:
 
     current_time = frame_idx / fps
 
-    # Convert the frame to HSV color space
+    
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    # Create a mask for white objects
+
     mask = cv2.inRange(hsv, whiteLower, whiteUpper)
     mask = cv2.GaussianBlur(mask, (15, 15), 0)
 
-    # Find contours (balls)
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     contours = sorted(contours, key=cv2.contourArea, reverse=True)[:1]
 
@@ -77,7 +70,7 @@ while True:
         time_steps.append(current_time)
 
         if prev_y is not None:
-            vel = ((cy - prev_y)) / SCALE_FACTOR * fps  # Compute velocity in pixels per second
+            vel = ((cy - prev_y)) / SCALE_FACTOR * fps  
             velocity.append(vel)
         prev_y = cy
 
@@ -114,7 +107,6 @@ def find_velocity_extrema(velocity, time_steps):
         if time_steps[peaks[i]] - time_steps[filtered_peaks[-1]] >= 0.02:
             filtered_peaks.append(peaks[i])
 
-    # Keep only the most prominent peak within a group of closely spaced peaks
     refined_peaks = []
     current_group = [filtered_peaks[0]]
 
@@ -127,7 +119,7 @@ def find_velocity_extrema(velocity, time_steps):
             refined_peaks.append(prominent_peak)
             current_group = [filtered_peaks[i]]
 
-    # Handle the last group
+    # Handle last group
     if current_group:
         prominent_peak = max(current_group, key=lambda x: velocity[x])
         refined_peaks.append(prominent_peak)
@@ -137,8 +129,6 @@ def find_velocity_extrema(velocity, time_steps):
     for i in range(1, len(valleys)):
         if time_steps[valleys[i]] - time_steps[filtered_valleys[-1]] >= 0.3:
             filtered_valleys.append(valleys[i])
-
-    # Keep only the most prominent valley within a group of closely spaced valleys
     valleys = []
     current_group = [filtered_valleys[0]]
 
