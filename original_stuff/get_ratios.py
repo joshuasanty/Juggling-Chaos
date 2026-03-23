@@ -10,8 +10,7 @@ def interpolate_points(p1, p2, steps=5):
     y_vals = np.linspace(p1[1], p2[1], steps).astype(int)
     return [(x, y) for x, y in zip(x_vals, y_vals)]
 
-# Input video file path
-video_path = "videos/josh_normal.mp4"  # Replace with your video file path
+video_path = "videos/josh_normal.mp4" 
 output_dir = "plots"
 os.makedirs(output_dir, exist_ok=True)
 
@@ -34,12 +33,11 @@ print(f"Resolution: {frame_width}x{frame_height}, FPS: {fps}, Total Frames: {tot
 whiteLower = (0, 0, 200)
 whiteUpper = (180, 50, 255)
 
-# Initialize variables
 SCALE_FACTOR = 2866
 trail = []
-y_positions = []  # Store y-values of the ball's position
+y_positions = [] 
 time_steps = []
-velocity = []  # Store velocity data
+velocity = []  
 distance_threshold = 25  # Maximum distance for a point to belong to the same trail
 
 frame_idx = 0
@@ -53,10 +51,7 @@ while True:
 
     current_time = frame_idx / fps
 
-    # Convert the frame to HSV color space
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-    # Create a mask for white objects
     mask = cv2.inRange(hsv, whiteLower, whiteUpper)
     mask = cv2.GaussianBlur(mask, (15, 15), 0)
 
