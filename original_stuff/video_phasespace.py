@@ -9,18 +9,15 @@ def interpolate_points(p1, p2, steps=5):
     y_vals = np.linspace(p1[1], p2[1], steps).astype(int)
     return [(x, y) for x, y in zip(x_vals, y_vals)]
 SCALE_FACTOR = 2866
-# Input video file path
-video_path = "videos/josh_fast.mp4"  # Replace with your video file path
+video_path = "videos/josh_fast.mp4"  
 output_dir = "plots"
 os.makedirs(output_dir, exist_ok=True)
 
-# Initialize video capture
 cap = cv2.VideoCapture(video_path)
 if not cap.isOpened():
     print("Error: Could not open video file.")
     exit()
 
-# Get video properties
 fps = cap.get(cv2.CAP_PROP_FPS)
 total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
@@ -29,15 +26,13 @@ frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 print(f"Video loaded: {video_path}")
 print(f"Resolution: {frame_width}x{frame_height}, FPS: {fps}, Total Frames: {total_frames}")
 
-# Define color range for detecting white balls
 whiteLower = (0, 0, 200)
 whiteUpper = (180, 50, 255)
 
-# Initialize variables
 trail = []
 y_positions = []  # Store y-values of the ball's position
 time_steps = []
-velocity = []  # Store velocity data
+velocity = [] 
 distance_threshold = 25  # Maximum distance for a point to belong to the same trail
 
 frame_idx = 0
@@ -47,14 +42,12 @@ prev_y = None
 while True:
     ret, frame = cap.read()
     if not ret:
-        break  # End of video
+        break 
 
     current_time = frame_idx / fps
 
-    # Convert the frame to HSV color space
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    # Create a mask for white objects
     mask = cv2.inRange(hsv, whiteLower, whiteUpper)
     mask = cv2.GaussianBlur(mask, (15, 15), 0)
 
