@@ -4,13 +4,11 @@ import matplotlib.pyplot as plt
 from scipy.signal import find_peaks
 import os
 
-# Function to interpolate points for smoother trails
 def interpolate_points(p1, p2, steps=5):
     x_vals = np.linspace(p1[0], p2[0], steps).astype(int)
     y_vals = np.linspace(p1[1], p2[1], steps).astype(int)
     return [(x, y) for x, y in zip(x_vals, y_vals)]
 
-# Function to find peaks and valleys and save the results
 def find_velocity_extrema(velocity, time_steps, video_name, output_dir):
     if len(velocity) < 2:
         print(f"Not enough data for peak detection in {video_name}.")
@@ -27,7 +25,6 @@ def find_velocity_extrema(velocity, time_steps, video_name, output_dir):
     valley_times = [time_steps[i] for i in valleys]
     valley_values = [velocity[i] for i in valleys]
 
-    # Save peaks and valleys to a text file
     output_file = os.path.join(output_dir, f"{video_name}_peaks_valleys.txt")
     with open(output_file, "w") as f:
         f.write("Peaks (Throwing Events):\n")
@@ -62,26 +59,22 @@ def process_videos(video_paths, output_dir):
     for video_path in video_paths:
         video_name = os.path.splitext(os.path.basename(video_path))[0]
         print(f"Processing video: {video_name}")
-
-        # Initialize video capture
         cap = cv2.VideoCapture(video_path)
         if not cap.isOpened():
             print(f"Error: Could not open video file {video_path}.")
             continue
 
-        # Get video properties
         fps = cap.get(cv2.CAP_PROP_FPS)
         total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-        # Define color range for detecting white balls
+        # color range for detecting white balls
         whiteLower = (0, 0, 200)
         whiteUpper = (180, 50, 255)
 
-        # Initialize variables
         SCALE_FACTOR = 2866
-        y_positions = []  # Store y-values of the ball's position
+        y_positions = []  
         time_steps = []
-        velocity = []  # Store velocity data
+        velocity = []  
 
         frame_idx = 0
         prev_y = None
@@ -93,10 +86,8 @@ def process_videos(video_paths, output_dir):
 
             current_time = frame_idx / fps
 
-            # Convert the frame to HSV color space
             hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-            # Create a mask for white objects
             mask = cv2.inRange(hsv, whiteLower, whiteUpper)
             mask = cv2.GaussianBlur(mask, (15, 15), 0)
 
@@ -126,15 +117,10 @@ def process_videos(video_paths, output_dir):
             frame_idx += 1
 
         cap.release()
-
-        # Find and save peaks and valleys
         find_velocity_extrema(velocity, time_steps, video_name, output_dir)
 
     print("All videos processed. Results saved in output directory.")
 
-# List of video paths
-video_paths = ["videos/josh_normal.mp4", "videos/josh_fast.mp4", "videos/josh_slow.mp4", "videos/simon_normal.mp4", "videos/simon_fast.mp4", "videos/simon_slow.mp4"]  # Add more video paths as needed
+video_paths = ["videos/josh_normal.mp4", "videos/josh_fast.mp4", "videos/josh_slow.mp4", "videos/simon_normal.mp4", "videos/simon_fast.mp4", "videos/simon_slow.mp4"]
 output_dir = "plots"
-
-# Process videos
 process_videos(video_paths, output_dir)
