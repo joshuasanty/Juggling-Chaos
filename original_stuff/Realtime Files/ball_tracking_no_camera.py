@@ -4,22 +4,17 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Initialize the webcam
 cap = cv2.VideoCapture(0)
 
-# Check if the camera opened successfully
 if not cap.isOpened():
     print("Error: Could not open webcam.")
     exit()
 
-# Set the camera to use MJPEG format
 cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
 
-# Optionally, set the resolution (width and height)
 cap.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
 cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
-# Define the white color range (for white objects like tennis balls)
 whiteLower = (0, 0, 200)
 whiteUpper = (180, 50, 255)
 
@@ -28,7 +23,6 @@ trails = [[], [], []]  # Separate trail lists for up to 3 balls
 max_trail_length = 15  # 0.5 seconds at 30 fps
 distance_threshold = 25  # Maximum distance for a point to belong to the same trail
 
-# Create a blank canvas (change dimensions to your desired resolution)
 canvas_height, canvas_width = 480, 640
 canvas = np.zeros((canvas_height, canvas_width, 3), dtype=np.uint8)
 framerate = 30
@@ -48,15 +42,13 @@ def interpolate_points(p1, p2, steps=5):
 
 prev_y = 0
 prev_time = time.time()
-# Initialize the plot
-plt.ion()  # Turn on interactive mode
+plt.ion()  # interactive mode
 fig, ax1 = plt.subplots(figsize=(10, 6))
 ax1.set_xlabel('y displacement')
 ax1.set_ylabel('y-velocity (pixels/s)')
 ax1.set_title('Phase-Space Plot: y-Displacement vs. y-Velocity')
 ax1.grid(True)
 
-# List to store previous points
 phase_space_points = []
 max_points = 50  # Keep the last N points
 
